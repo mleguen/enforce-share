@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+if [ $# -lt 1 ]; then
+  echo "enforce-share <share_folder> [share-group]"
+  exit 1
+fi
+
+ROOT_DIR="$1"
+
+if [ ! -d "$ROOT_DIR" ]; then
+  echo "$ROOT_DIR must be a directory!"
+  exit 2
+fi
+
+get_group() {
+  stat -c %G "$1"
+}
+
+GROUP=${2:-$(get_group "$ROOT_DIR")}
+
+enforce_group() {
+  find "$ROOT_DIR" \( -type d -or -type f \) -not -group $GROUP -printf "CHGRP %p\n" -exec chgrp $GROUP "{}" ";"
+}
+
+enforce_dir_perms() {
+	find "$ROOT_DIR" -type d -not -perm -g+rwxs,o-rwx -printf "CHMOD %p\n" -exec chmod g+rwxs,o-rwx "{}" ";"
+}
+
+enforce_file_perms() {
+	find "$ROOT_DIR" -type f -not -perm -g+rw,o-rwx -printf "CHMOD %p\n" -exec chmod g+rw,o-rwx "{}" ";"
+}
+
+echo "[$(date -Iseconds)] Starting for $ROOT_DIR..."
+enforce_group
+enforce_dir_perms
+enforce_file_perms
+echo "[$(date -Iseconds)] Done."
+echo

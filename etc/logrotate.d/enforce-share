@@ -1,0 +1,9 @@
+%LOG_DIR%/enforce-share.log {
+  monthly
+  rotate 3
+  compress
+  delaycompress
+  missingok
+  notifempty
+  create 644 root root
+}
