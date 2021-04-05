@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
-for user in parents famille amandine mael aedan noam teilo; do
-  enforce-share /home/$user/syncthing >> %LOG_DIR%/enforce-share.log 2>&1
+
+source %CONF_DIR%/enforce-sharerc.sh
+
+for share in $ENFORCED_SHARES; do
+  enforce-share $share >> %LOG_DIR%/enforce-share.log 2>&1
 done
