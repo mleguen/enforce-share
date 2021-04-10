@@ -47,3 +47,18 @@ forces `share_root`'s files and directories:
         and log in `$LOG_DIR` (`/var/local/log` by default)
     -   a logrotate configuration file in `$LOGROTATE_CONF_DIR` (`/etc/logrotate.d` by default)
         to rotate the log file
+
+Optionally, you can change the crontab setup to run enforce-share every minute, instead of every hour:
+
+1.  Move enforce-share cron script to a new `/etc/cron.minutely` folder:
+
+    ```bash
+    sudo mkdir /etc/cron.minutely
+    sudo mv /etc/cron.hourly/enforce-share /etc/cron.minutely/
+    ```
+
+1.  Add the following line to `/etc/crontab` to have scripts in `/etc/cron.minutely` run every minute :
+
+    ```crontab
+    *  *    * * *   root    cd / && run-parts --report /etc/cron.minutely
+    ```
